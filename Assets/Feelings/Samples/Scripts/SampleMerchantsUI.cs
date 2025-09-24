@@ -29,14 +29,22 @@ public class SampleMerchantsUI : MonoBehaviour
 
     void UpdatePrices()
 	{
-	    merchant1Product1.text = string.Format("{0:C}", merchant1.CalcuatePrice(product1BasePrice));
-	    merchant1Product2.text = string.Format("{0:C}", merchant1.CalcuatePrice(product2BasePrice));
-	    merchant1Product3.text = string.Format("{0:C}", merchant1.CalcuatePrice(product3BasePrice));
-	    merchant1Product4.text = string.Format("{0:C}", merchant1.CalcuatePrice(product4BasePrice));
-	    merchant2Product1.text = string.Format("{0:C}", merchant2.CalcuatePrice(product1BasePrice));
-	    merchant2Product2.text = string.Format("{0:C}", merchant2.CalcuatePrice(product2BasePrice));
-        merchant2Product3.text = string.Format("{0:C}", merchant2.CalcuatePrice(product3BasePrice));
-	    merchant2Product4.text = string.Format("{0:C}", merchant2.CalcuatePrice(product4BasePrice));
+	    if (merchant1Product1 != null)
+	        merchant1Product1.text = string.Format("{0:C}", merchant1.CalcuatePrice(product1BasePrice));
+	    if (merchant1Product2 != null)
+	        merchant1Product2.text = string.Format("{0:C}", merchant1.CalcuatePrice(product2BasePrice));
+	    if (merchant1Product3 != null)
+	        merchant1Product3.text = string.Format("{0:C}", merchant1.CalcuatePrice(product3BasePrice));
+	    if (merchant1Product4 != null)
+	        merchant1Product4.text = string.Format("{0:C}", merchant1.CalcuatePrice(product4BasePrice));
+	    if (merchant2Product1 != null)
+	        merchant2Product1.text = string.Format("{0:C}", merchant2.CalcuatePrice(product1BasePrice));
+	    if (merchant2Product2 != null)
+	        merchant2Product2.text = string.Format("{0:C}", merchant2.CalcuatePrice(product2BasePrice));
+        if (merchant2Product3 != null)
+            merchant2Product3.text = string.Format("{0:C}", merchant2.CalcuatePrice(product3BasePrice));
+	    if (merchant2Product4 != null)
+	        merchant2Product4.text = string.Format("{0:C}", merchant2.CalcuatePrice(product4BasePrice));
 	}
 
     public void BuySomething()

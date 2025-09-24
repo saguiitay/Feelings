@@ -22,11 +22,17 @@ public class SampleUI : MonoBehaviour
 
     private void RefreshSliders()
     {
-        madSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Mad);
-        scaredSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Scared);
-        joyfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Joyful);
-        powerfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Powerful);
-        peacefulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Peaceful);
-        sadSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Sad);
+        if (madSlider != null)
+            madSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Mad);
+        if (scaredSlider != null)
+            scaredSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Scared);
+        if (joyfulSlider != null)
+            joyfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Joyful);
+        if (powerfulSlider != null)
+            powerfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Powerful);
+        if (peacefulSlider != null)
+            peacefulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Peaceful);
+        if (sadSlider != null)
+            sadSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Sad);
     }
 }
