@@ -45,17 +45,27 @@ public class FeelingsMap
         }
     }
 
+    private Feeling GetOrCreateFeeling(string feelingName)
+    {
+        if (!m_feelings.TryGetValue(feelingName, out var feeling))
+        {
+            feeling = new Feeling 
+            { 
+                Name = feelingName, 
+                Effects = new List<Effect>(), 
+                Value = 0f 
+            };
+            m_feelings.Add(feelingName, feeling);
+        }
+        return feeling;
+    }
+
     protected void SetEffect(string feelingNameA, string feelingNameB, float ratio)
     {
         lock (m_lock)
         {
-            // Retrieve the current value of the feeling, create a new value if non exist
-            Feeling feeling;
-            if (!m_feelings.TryGetValue(feelingNameA, out feeling))
-            {
-                feeling = new Feeling { Name = feelingNameA, Effects = new List<Effect>(), Value = 0f };
-                m_feelings.Add(feelingNameA, feeling);
-            }
+            // Use optimized GetOrCreateFeeling method
+            var feeling = GetOrCreateFeeling(feelingNameA);
 
             // Update any existing effect, or create a new effect
             var existingEffect = feeling.Effects.FirstOrDefault(e => e.Feeling == feelingNameB);
@@ -72,13 +82,8 @@ public class FeelingsMap
 
     private float ApplyFeelingInternal(string feelingName, float delta, HashSet<string> handled)
     {
-        // Retrieve the current value of the feeling, create a new value if non exist
-        Feeling feeling;
-        if (!m_feelings.TryGetValue(feelingName, out feeling))
-        {
-            feeling = new Feeling {Name = feelingName, Effects = new List<Effect>(), Value = 0f};
-            m_feelings.Add(feelingName, feeling);
-        }
+        // Use optimized GetOrCreateFeeling method
+        var feeling = GetOrCreateFeeling(feelingName);
 
         // Update the feeling's value
         feeling.Value += delta;
