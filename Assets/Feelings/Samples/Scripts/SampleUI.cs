@@ -7,7 +7,7 @@ public class SampleUI : MonoBehaviour
     public BasicFeelingsMap feelingsMap = new BasicFeelingsMap();
 
     public Slider madSlider;
-    public Slider scaredlider;
+    public Slider scaredSlider;
     public Slider joyfulSlider;
     public Slider powerfulSlider;
     public Slider peacefulSlider;
@@ -23,7 +23,7 @@ public class SampleUI : MonoBehaviour
     private void RefreshSliders()
     {
         madSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Mad);
-        scaredlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Scared);
+        scaredSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Scared);
         joyfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Joyful);
         powerfulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Powerful);
         peacefulSlider.value = feelingsMap.GetFeeling(BasicFeelingsMap.Peaceful);

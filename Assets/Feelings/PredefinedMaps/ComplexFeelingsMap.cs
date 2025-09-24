@@ -16,7 +16,7 @@ public class ComplexFeelingsMap : FeelingsMap
     public const string Helpless = "Helpless";
     public const string Submissive = "Submissive";
     public const string Insecure = "Insecure";
-    public const string Anxius = "Anxius";
+    public const string Anxious = "Anxious";
 
     public const string Joyful = "Joyful";
     public const string Excited = "Excited";
@@ -53,7 +53,7 @@ public class ComplexFeelingsMap : FeelingsMap
     private readonly Dictionary<string, string[]> m_feelingToSubfeelings = new Dictionary<string, string[]>
     {
         {"Mad", new[] {Hurt, Hostile, Angry, Selfish, Hateful, Critical}},
-        {"Scared", new[] {Confused, Rejected, Helpless, Submissive, Insecure, Anxius}},
+        {"Scared", new[] {Confused, Rejected, Helpless, Submissive, Insecure, Anxious}},
         {"Joyful", new[] {Excited, Sensuous, Energetic, Cheerful, Creative, Hopeful}},
         {"Powerful", new[] {Faithful, Important, Appreciated, Respected, Proud, Aware}},
         {"Peaceful", new[] {Content, Thoughtful, Intimate, Loving, Trusting, Nurturing}},
