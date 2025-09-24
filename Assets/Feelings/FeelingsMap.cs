@@ -6,6 +6,7 @@ public class FeelingsMap
 {
     // Maintains the feelings, their current values, and their effects
     private readonly Dictionary<string, Feeling> m_feelings;
+    private readonly object m_lock = new object();
 
     public FeelingsMap()
     {
@@ -19,12 +20,15 @@ public class FeelingsMap
     /// <returns>Current value of the feeling. Value is between -100.0 and 100.0</returns>
     public float GetFeeling(string feelingName)
     {
-        Feeling feeling;
-        if (!m_feelings.TryGetValue(feelingName, out feeling))
+        lock (m_lock)
         {
-            return 0;
+            Feeling feeling;
+            if (!m_feelings.TryGetValue(feelingName, out feeling))
+            {
+                return 0;
+            }
+            return feeling.Value;
         }
-        return feeling.Value;
     }
 
     /// <summary>
@@ -35,32 +39,38 @@ public class FeelingsMap
     /// <returns>New value of the feeling. Value is between -100.0 and 100.0</returns>
     public float ApplyFeeling(string feelingName, float delta)
     {
-        return ApplyFeeling(feelingName, delta, new HashSet<string>());
+        lock (m_lock)
+        {
+            return ApplyFeelingInternal(feelingName, delta, new HashSet<string>());
+        }
     }
 
     protected void SetEffect(string feelingNameA, string feelingNameB, float ratio)
     {
-        // Retrieve the current value of the feeling, create a new value if non exist
-        Feeling feeling;
-        if (!m_feelings.TryGetValue(feelingNameA, out feeling))
+        lock (m_lock)
         {
-            feeling = new Feeling { Name = feelingNameA, Effects = new List<Effect>(), Value = 0f };
-            m_feelings.Add(feelingNameA, feeling);
-        }
+            // Retrieve the current value of the feeling, create a new value if non exist
+            Feeling feeling;
+            if (!m_feelings.TryGetValue(feelingNameA, out feeling))
+            {
+                feeling = new Feeling { Name = feelingNameA, Effects = new List<Effect>(), Value = 0f };
+                m_feelings.Add(feelingNameA, feeling);
+            }
 
-        // Update any existing effect, or create a new effect
-        var existingEffect = feeling.Effects.FirstOrDefault(e => e.Feeling == feelingNameB);
-        if (existingEffect == null)
-        {
-            feeling.Effects.Add(new Effect { Feeling = feelingNameB, Ratio = ratio });
-        }
-        else
-        {
-            existingEffect.Ratio = ratio;
+            // Update any existing effect, or create a new effect
+            var existingEffect = feeling.Effects.FirstOrDefault(e => e.Feeling == feelingNameB);
+            if (existingEffect == null)
+            {
+                feeling.Effects.Add(new Effect { Feeling = feelingNameB, Ratio = ratio });
+            }
+            else
+            {
+                existingEffect.Ratio = ratio;
+            }
         }
     }
 
-    private float ApplyFeeling(string feelingName, float delta, HashSet<string> handled)
+    private float ApplyFeelingInternal(string feelingName, float delta, HashSet<string> handled)
     {
         // Retrieve the current value of the feeling, create a new value if non exist
         Feeling feeling;
@@ -85,7 +95,7 @@ public class FeelingsMap
                 {
                     continue;
                 }
-                ApplyFeeling(effect.Feeling, delta * effect.Ratio, handled);
+                ApplyFeelingInternal(effect.Feeling, delta * effect.Ratio, handled);
             }
         }
 
