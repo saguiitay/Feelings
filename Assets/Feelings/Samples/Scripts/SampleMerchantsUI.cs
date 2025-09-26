@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Feelings.Scripts.Sample
@@ -74,6 +73,21 @@ namespace Assets.Feelings.Scripts.Sample
         {
             merchant1.Bribe();
             merchant2.Bribe();
+            UpdatePrices();
+        }
+
+        public void Save()
+        {
+            FeelingsService.Instance.Save(merchant1, "merchant1");
+            FeelingsService.Instance.Save(merchant2, "merchant2");
+        }
+
+
+        public void Load()
+        {
+            FeelingsService.Instance.Load(merchant1, "merchant1");
+            FeelingsService.Instance.Load(merchant2, "merchant2");
+
             UpdatePrices();
         }
     }

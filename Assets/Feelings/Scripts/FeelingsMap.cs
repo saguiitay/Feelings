@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
+using Feelings.Persistence;
+using Debug = UnityEngine.Debug;
 
 namespace Assets.Feelings.Scripts
 {
@@ -9,7 +12,7 @@ namespace Assets.Feelings.Scripts
     /// Manages interconnected emotions with cascading effects for AI behavior systems.
     /// All feeling values are automatically clamped between MIN_FEELING_VALUE and MAX_FEELING_VALUE.
     /// </summary>
-    public class FeelingsMap : IFeelingsReader, IFeelingsModifier
+    public class FeelingsMap : IFeelingsReader, IFeelingsModifier, IFeelingsSnapshotProvider
     {
         /// <summary>
         /// The minimum allowed value for any feeling.
@@ -215,5 +218,103 @@ namespace Assets.Feelings.Scripts
 
             public List<Effect> Effects;
         }
+
+        #region Snapshot Operations
+        
+        /// <summary>
+        /// Creates a snapshot of current feelings state for serialization.
+        /// </summary>
+        /// <returns>Serializable data representing current state.</returns>
+        public FeelingsData CreateSnapshot()
+        {
+            lock (m_lock)
+            {
+                var data = new FeelingsData();
+                
+                // Convert feelings to serializable format
+                if (m_feelings.Count > 0)
+                {
+                    data.feelings = m_feelings.Values.Select(f => new FeelingsData.FeelingsEntry
+                    {
+                        name = f.Name,
+                        value = f.Value
+                    }).ToArray();
+                    
+                    // Convert effects to serializable format
+                    var effectsList = new List<FeelingsData.EffectsEntry>();
+                    foreach (var feeling in m_feelings.Values)
+                    {
+                        if (feeling.Effects != null && feeling.Effects.Count > 0)
+                        {
+                            effectsList.Add(new FeelingsData.EffectsEntry
+                            {
+                                sourceFeelingName = feeling.Name,
+                                effectsData = feeling.Effects.Select(e => new FeelingsData.EffectsEntry.EffectData
+                                {
+                                    targetFeeling = e.Feeling,
+                                    ratio = e.Ratio
+                                }).ToArray()
+                            });
+                        }
+                    }
+                    data.effects = effectsList.ToArray();
+                }
+                
+                return data;
+            }
+        }
+        
+        /// <summary>
+        /// Restores feelings state from serialized data.
+        /// </summary>
+        /// <param name="data">The data to restore from.</param>
+        public void RestoreFromSnapshot(FeelingsData data)
+        {
+            if (data == null)
+            {
+                Debug.LogWarning("[FeelingsMap] Cannot restore from null data");
+                return;
+            }
+            
+            lock (m_lock)
+            {
+                m_feelings.Clear();
+                
+                // Restore feelings values
+                if (data.feelings != null)
+                {
+                    foreach (var entry in data.feelings)
+                    {
+                        if (!string.IsNullOrEmpty(entry.name))
+                        {
+                            var feeling = GetOrCreateFeeling(entry.name);
+                            feeling.Value = entry.value;
+                        }
+                    }
+                }
+                
+                // Restore effects relationships
+                if (data.effects != null)
+                {
+                    foreach (var effectEntry in data.effects)
+                    {
+                        if (!string.IsNullOrEmpty(effectEntry.sourceFeelingName) && effectEntry.effectsData != null)
+                        {
+                            foreach (var effectData in effectEntry.effectsData)
+                            {
+                                if (!string.IsNullOrEmpty(effectData.targetFeeling))
+                                {
+                                    SetEffect(effectEntry.sourceFeelingName, effectData.targetFeeling, effectData.ratio);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Debug.Log($"[FeelingsMap] Successfully restored feelings state from snapshot (version: {data.version})");
+        }
+        
+        #endregion
     }
 }
